@@ -23,6 +23,9 @@ import AlbumImages from './AlbumImages'
 import Share from './Share'
 import Invite from './Invite'
 import MoreBar from './MoreBar'
+import AlbumAdd from './AlbumAdd'
+import Delete from './Delete'
+import CameraLense from './CameraLense'
 const icons = {
   home: Home,
   arrowLeft: ArrowLeft,
@@ -45,7 +48,10 @@ const icons = {
   albumImages: AlbumImages,
   share: Share,
   invite: Invite,
-  more: MoreBar
+  more: MoreBar,
+  albumAdd: AlbumAdd,
+  delete: Delete,
+  cameraLense: CameraLense
 }
 
 export default function Icon({ name, ...props }) {
