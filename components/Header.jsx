@@ -5,8 +5,12 @@ import { wp } from '@/helpers/common'
 import Avatar from '@/components/Avatar'
 import Icon from '@/assets/icons'
 import { useNavigation } from 'expo-router'
+import { useSelector } from 'react-redux'
+import { Image } from 'expo-image'
 const Header = () => {
     const navigation = useNavigation()
+    const userData = useSelector((state) => state.auth.userData)
+    const avatarUrl = userData.user?.avatar
     return (
         <View style={styles.container}>
             <Text style={styles.title}>SanpStore</Text>
@@ -18,9 +22,12 @@ const Header = () => {
                     </View>
                 </Pressable>
                 {/* logout button */}
-                <Pressable onPress={() => navigation.push('profile')}>
+                <Pressable onPress={() => {
+                    console.log(avatarUrl)
+                    navigation.push('profile')
+                }}>
                     <View>
-                        <Avatar imageUrl={require('../assets/images/icon.png')} />
+                        <Avatar imageUrl={avatarUrl} />
                     </View>
                 </Pressable>
             </View>
@@ -51,5 +58,5 @@ const styles = StyleSheet.create({
         fontWeight: theme.fonts.bold,
         color: theme.colors.primary,
         paddingLeft: wp(2)
-    }
+    },
 })

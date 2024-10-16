@@ -21,6 +21,12 @@
         "backgroundColor": "#ffffff"
       }
     },
+    "permissions": [
+      "CAMERA",
+      "READ_EXTERNAL_STORAGE",
+      "WRITE_EXTERNAL_STORAGE",
+      "INTERNET"
+    ],
     "web": {
       "bundler": "metro",
       "output": "static",
@@ -31,6 +37,11 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "6ca9c7fd-3045-4332-b862-d7357f69492e"
+      }
     }
   }
 }

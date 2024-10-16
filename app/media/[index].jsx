@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, Image, Dimensions, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, Dimensions, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { Video } from 'expo-av';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { MaterialIcons, Ionicons } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import axios from 'axios';
@@ -13,10 +13,12 @@ import Icon from '../../assets/icons';
 import { hp, wp } from '../../helpers/common';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import Toast from 'react-native-toast-message';
-import { theme } from '../../constants/theme';
 import Toaster from '../../components/Toaster';
 import * as MediaLibrary from 'expo-media-library';
 import dateCovertToLocalDate from '../../utils/manageDate';
+import { Image } from 'expo-image';
+import { mediaStyles } from './mediacss';
+import AddToAlbum from '../../components/AddToAlbum';
 export default function MediaViewer() {
   const mergedAssetsData = useSelector((state) => state.media.mergedAssets);
   const dispatch = useDispatch();
@@ -25,11 +27,15 @@ export default function MediaViewer() {
   const [currentIndex, setCurrentIndex] = React.useState(parseInt(index, 10));
   const router = useRouter();
   const bottomSheetModalRef = useRef(null);
+  const addToAlbumRef = useRef(null);
   const snapPoints = useMemo(() => ['25%', '50%', '75%', '90%'], []);
   const currentAsset = mergedAssetsData[currentIndex];
   const [assetExtraInfo, setAssetExtraInfo] = useState(null)
   const handlePresentModalPress = useCallback(() => {
     bottomSheetModalRef.current?.present();
+  }, []);
+  const handlePresentAddToAlbumModalPress = useCallback(() => {
+    addToAlbumRef.current?.present();
   }, []);
   const handleSheetChanges = useCallback((index) => {
     console.log('handleSheetChanges', index);
@@ -45,28 +51,23 @@ export default function MediaViewer() {
     ),
     []
   );
-  const getAssetExtraInfo = async (assetId) => {
-    const asset = await MediaLibrary.getAssetInfoAsync(assetId);
-    console.log(JSON.stringify(asset, null, 2));
-    return asset;
-  }
+
   useEffect(() => {
-    console.log('currentAsset', currentAsset);
     const fetchAssetInfo = async () => {
       const asset = await MediaLibrary.getAssetInfoAsync(currentAsset.id);
       setAssetExtraInfo(asset);
-      console.log("EXIF data:", JSON.stringify(asset?.exif, null, 2));
     };
 
     fetchAssetInfo();
+    console.log('currentAsset', currentAsset);
   }, [currentIndex, currentAsset]);
   const renderItem = ({ item }) => {
     return item.mediaType === 'photo' ? (
       <Image
-        source={{ uri: item.uri }}
+        source={item.uri}
         style={{ width, height }}
-        resizeMode="contain"
-        resizeMethod="resize"
+        contentFit='contain'
+        transition={100}
       />
     ) : (
       <Video
@@ -96,8 +97,8 @@ export default function MediaViewer() {
       } else {
         formData.append('photo', {
           uri: data.uri,
-          name: `video_${data.id}.mp4`, // Ensure a proper filename
-          type: 'video/mp4' // Set appropriate MIME type
+          name: `video_${data.id}.mp4`,
+          type: 'video/mp4'
         });
       }
 
@@ -121,6 +122,12 @@ export default function MediaViewer() {
       dispatch(markAssetAsBackedUp({ index: currentIndex }));
     } catch (error) {
       console.log("Error uploading photo:", error.response?.data || error.message);
+      Toaster({
+        type: 'error',
+        heading: 'failed!',
+        message: error.message,
+        position: 'bottom'
+      })
     }
   };
 
@@ -173,7 +180,7 @@ export default function MediaViewer() {
       >
         <BottomSheetView style={[styles.contentContainer, { height: hp(50) }]}>
           <View style={styles.BSContainer}>
-            <TouchableOpacity >
+            <TouchableOpacity onPress={() => handlePresentAddToAlbumModalPress()}>
               <View style={styles.BSButton}>
                 <Icon name={'albumAdd'} />
                 <Text style={styles.BSButtonText}>Add to album</Text>
@@ -188,7 +195,7 @@ export default function MediaViewer() {
             <TouchableOpacity>
               <View style={styles.BSButton}>
                 <Icon name={'delete'} />
-                <Text style={styles.BSButtonText}>delete from device</Text>
+                <Text style={styles.BSButtonText}>delete from {currentAsset?.isBackedUp ? 'cloud' : 'device'}</Text>
               </View>
             </TouchableOpacity>
             <TouchableOpacity>
@@ -225,6 +232,7 @@ export default function MediaViewer() {
                 <Text style={styles.BSDetails2ndItems}>{assetExtraInfo?.width} x {assetExtraInfo?.height}</Text>
               </View>
             </View>)}
+            <AddToAlbum bottomSheetModalRef={addToAlbumRef} />
           </View>
           <Toast />
         </BottomSheetView>
@@ -233,78 +241,4 @@ export default function MediaViewer() {
   );
 }
 
-const styles = StyleSheet.create({
-  toolbar: {
-    position: 'absolute',
-    top: 0,  // Corrected typo here
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0)',  // Adjusted for better visibility
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    margin: 10,
-  },
-  BSContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  BSButton: {
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: wp(1)
-  },
-  BSButtonText: {
-    fontSize: wp(1.5),
-    fontWeight: theme.fonts.semibold,
-    color: theme.colors.dark,
-  },
-  line: {
-    height: 1, // Line height
-    backgroundColor: theme.colors.darkLight,
-    marginVertical: wp(1),
-    marginHorizontal: wp(1),
-  },
-  BSDateTime: {
-    fontSize: wp(2.5),
-    fontWeight: theme.fonts.semibold,
-    color: theme.colors.dark,
-    margin: wp(3),
-  },
-  BSDetailsItems: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: wp(4),
-    margin: wp(3),
-  },
-  BSDetails1stItems: {
-    fontSize: wp(2.1),
-    fontWeight: theme.fonts.bold,
-    color: theme.colors.dark,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  BSDetails2ndItems: {
-    fontSize: wp(1.8),
-    fontWeight: theme.fonts.semibold,
-    color: theme.colors.dark,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  BSDetailsTitle: {
-    fontSize: wp(3),
-    fontWeight: theme.fonts.bold,
-    color: theme.colors.dark,
-    marginLeft: wp(3),
-  }
-});
+const styles = mediaStyles

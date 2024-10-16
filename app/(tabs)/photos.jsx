@@ -16,7 +16,7 @@ import { addAssets } from '../../features/media/mediaSlice';
 const RenderMediaItem = React.memo(({ item, index, handleMediaPress }) => (
     <TouchableOpacity key={item.id} onPress={() => handleMediaPress(index)}>
         <Image
-            source={{ uri: item.uri }}
+            source={item.uri}
             style={{ width: wp(15.5), height: wp(15.5), padding: 10, borderRadius: 10, margin: 1 }}
         />
         {item.isBackedUp && (
@@ -111,25 +111,15 @@ const Photos = () => {
             (remote) => !localAssets.some((local) => local.id === remote.localAssetId)
         );
 
-        console.log('Missing local assets:', missingLocalAssets);
 
         // Insert these missing assets into the correct time position based on creation date
         missingLocalAssets.forEach((remoteAsset) => {
-            console.log('Remote asset data:', remoteAsset); // Log remote asset data for debugging
             const { localAssetId, creationDateTime } = remoteAsset;
-
-            // Log the creation time to ensure it's being accessed correctly
-            console.log('Remote asset insertion time:', creationDateTime);
-
-
 
             // Find the correct insertion index based on the creation date
             const insertionIndex = mergedAssets.findIndex(
                 (asset) => asset.modificationTime > creationDateTime
             );
-
-            console.log('Calculated insertion index:', insertionIndex);
-
             // Create a new asset object for the remote asset
             const newRemoteAsset = {
                 id: localAssetId,
@@ -137,6 +127,7 @@ const Photos = () => {
                 modificationTime: creationDateTime,
                 isBackedUp: true,
                 mediaType: remoteAsset.url.split('.').pop() === 'mp4' ? 'video' : 'photo',
+                _id: remoteAsset._id
             };
 
             // Insert at the correct position, or append if no earlier asset is found
