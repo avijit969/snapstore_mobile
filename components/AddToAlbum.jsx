@@ -24,7 +24,7 @@ const AddToAlbum = ({ bottomSheetModalRef }) => {
             >
                 <BottomSheetView style={styles.contentContainer}>
                     <View>
-
+                        
                     </View>
                 </BottomSheetView>
             </BottomSheetModal>

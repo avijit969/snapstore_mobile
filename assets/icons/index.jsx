@@ -26,6 +26,8 @@ import MoreBar from './MoreBar'
 import AlbumAdd from './AlbumAdd'
 import Delete from './Delete'
 import CameraLense from './CameraLense'
+import Message from './Message'
+import AddImage from './AddImage'
 const icons = {
   home: Home,
   arrowLeft: ArrowLeft,
@@ -51,7 +53,9 @@ const icons = {
   more: MoreBar,
   albumAdd: AlbumAdd,
   delete: Delete,
-  cameraLense: CameraLense
+  cameraLense: CameraLense,
+  message: Message,
+  addImage: AddImage
 }
 
 export default function Icon({ name, ...props }) {

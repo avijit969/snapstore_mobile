@@ -4,12 +4,12 @@ import { Image } from 'expo-image'
 import { wp } from '@/helpers/common'
 import { theme } from '@/constants/theme'
 
-const Avatar = ({ imageUrl }) => {
+const Avatar = ({ imageUrl, height, width }) => {
     return (
         <View>
             <Image
-                style={styles.image}
-                source={imageUrl}
+                style={[styles.image, { height: height, width: width }]}
+                source={imageUrl?.replace('http', 'https')}
                 contentFit="cover"
                 transition={100}
             />
@@ -21,8 +21,6 @@ export default Avatar
 
 const styles = StyleSheet.create({
     image: {
-        width: wp(10),
-        height: wp(10),
         borderRadius: wp(5),
         borderRadius: theme.radius.full
     }

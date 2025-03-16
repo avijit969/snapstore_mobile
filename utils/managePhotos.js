@@ -3,7 +3,7 @@ import { getToken } from "./tokenManage"
 import * as MediaLibrary from 'expo-media-library';
 
 // delete image from the remote server
-export const deleteImage = async (imageId) => {
+const deleteImage = async (imageId) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -46,7 +46,7 @@ const deleteImageFromDevice = async (imageId) => {
 }
 
 // get all photos
-const getAllPhotos = async () => {
+const getAllPhotos = async (page, limit) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -55,12 +55,16 @@ const getAllPhotos = async () => {
             headers: {
                 'Content-Type': "application/json",
                 'Authorization': `Bearer ${accessToken}`
+            },
+            params: {
+                page: page,
+                limit: limit
             }
         })
         return {
             success: true,
             message: response.data.message,
-            data: response.data.data
+            data: response.data
         }
     } catch (error) {
         return {
@@ -104,10 +108,10 @@ const uploadSinglePhoto = async (photo) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
-            'url': `${process.env.EXPO_PUBLIC_API_URL}/photos/upload-single`,
-            'method': 'POST',
+            method: 'POST',
+            url: `${process.env.EXPO_PUBLIC_API_URL}/photos/upload-single`,
             headers: {
-                'Content-Type': "multipart/form-data",
+                'Content-Type': 'multipart/form-data',
                 'Authorization': `Bearer ${accessToken}`
             },
             data: photo

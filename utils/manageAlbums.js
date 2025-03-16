@@ -2,7 +2,7 @@ import axios from "axios";
 import { getToken } from "./tokenManage"
 
 // create new album
-const createNemAlbum = async (albumName, albumDescription) => {
+const createNewAlbum = async (albumName, albumDescription) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -20,7 +20,8 @@ const createNemAlbum = async (albumName, albumDescription) => {
         if (response.data.success) {
             return {
                 success: true,
-                message: response.data.message
+                message: response.data.message,
+                data: response.data.data
             }
         }
     } catch (error) {
@@ -32,7 +33,7 @@ const createNemAlbum = async (albumName, albumDescription) => {
 }
 
 // delete album from the server
-export const deleteAlbum = async (albumId) => {
+const deleteAlbum = async (albumId) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -58,7 +59,7 @@ export const deleteAlbum = async (albumId) => {
 }
 
 // edit album details like name and description
-export const editAlbumDetails = async (albumId, albumName, albumDescription) => {
+const editAlbumDetails = async (albumId, albumName, albumDescription) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -88,7 +89,7 @@ export const editAlbumDetails = async (albumId, albumName, albumDescription) => 
 }
 
 // add image to album
-export const addImageToAlbum = async (albumId, imageIdArray) => {
+const addImageToAlbum = async (albumId, imageIdArray) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -171,7 +172,7 @@ const getImagesFromAlbum = async (albumId) => {
 }
 
 // add album cover image 
-export const addAlbumCoverImage = async (albumId, imageId) => {
+const addAlbumCoverImage = async (albumId, imageId) => {
     const accessToken = await getToken();
     try {
         const response = await axios({
@@ -201,7 +202,7 @@ export const addAlbumCoverImage = async (albumId, imageId) => {
 
 
 export {
-    createNemAlbum,
+    createNewAlbum,
     deleteAlbum,
     editAlbumDetails,
     addImageToAlbum,

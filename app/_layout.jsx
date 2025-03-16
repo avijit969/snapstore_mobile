@@ -11,6 +11,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet';
+import Toast from 'react-native-toast-message'
 const _layout = () => {
 
   const persistor = persistStore(store)
@@ -21,6 +22,7 @@ const _layout = () => {
           <PersistGate persistor={persistor}>
             <StatusBar style='dark' />
             <MainLayout />
+            <Toast />
           </PersistGate>
         </Provider>
       </BottomSheetModalProvider>
@@ -29,8 +31,7 @@ const _layout = () => {
 }
 
 const MainLayout = () => {
-  const authStatus = useSelector((state: any) => state.auth.status)
-  const userData = useSelector((state: any) => state.auth.userData)
+  const authStatus = useSelector((state) => state.auth.status)
   const router = useRouter()
   useEffect(() => {
     if (authStatus) {
@@ -39,7 +40,7 @@ const MainLayout = () => {
     else {
       router.replace('/welcome')
     }
-  }, [userData]);
+  }, [authStatus]);
 
   return (
     <Stack>
@@ -54,6 +55,10 @@ const MainLayout = () => {
       <Stack.Screen name='albums/[albums]' options={{ headerShown: false }} />
       <Stack.Screen name='albums/createNew' options={{ headerShown: false }} />
       <Stack.Screen name='media/[index]' options={{ headerShown: false }} />
+      <Stack.Screen name='backedup_images/[particularImg]' options={{ headerShown: false }} />
+      <Stack.Screen name='backedup_images/allImages' options={{ headerShown: false }} />
+      <Stack.Screen name='changePassword' options={{ headerShown: false }} />
+      <Stack.Screen name='forgotPassword' options={{ headerShown: false }} />
     </Stack>
   )
 }

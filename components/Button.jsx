@@ -3,6 +3,7 @@ import React from 'react'
 import { theme } from '../constants/theme'
 import { wp, hp } from '../helpers/common'
 import Loading from './Loading'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const Button = (
   { buttonStyle,
@@ -33,10 +34,10 @@ const Button = (
     )
   }
   return (
-    <Pressable onPress={onPress} style={[styles.button, buttonStyle, hasShadow && shadowStyle, disabled && disabledStyle]}>
+    <TouchableOpacity onPress={onPress} style={[styles.button, buttonStyle, hasShadow && shadowStyle, disabled && disabledStyle]}>
       <Text style={styles.text}>{title}</Text>
       {icon && icon}
-    </Pressable>
+    </TouchableOpacity>
   )
 }
 

@@ -4,34 +4,33 @@ import { theme } from '@/constants/theme'
 import { wp } from '@/helpers/common'
 import Avatar from '@/components/Avatar'
 import Icon from '@/assets/icons'
-import { useNavigation } from 'expo-router'
+import { useRouter } from 'expo-router'
 import { useSelector } from 'react-redux'
 import { Image } from 'expo-image'
+import { TouchableOpacity } from 'react-native'
 const Header = () => {
-    const navigation = useNavigation()
+    const router = useRouter()
     const userData = useSelector((state) => state.auth.userData)
-    const avatarUrl = userData.user?.avatar
+    const avatarUrl = userData?.user?.avatar
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>SanpStore</Text>
+            <Text style={styles.title}>SnapStore</Text>
             {/* upload button  */}
             <View style={styles.rightContainer}>
-                <Pressable onPress={() => navigation.push('upload')}>
+                <TouchableOpacity onPress={() => router.push('backedup_images/allImages')}>
                     <View>
                         <Icon name={'cloudUpload'} color={theme.colors.dark} />
                     </View>
-                </Pressable>
-                {/* logout button */}
-                <Pressable onPress={() => {
-                    console.log(avatarUrl)
-                    navigation.push('profile')
+                </TouchableOpacity>
+                {/* profile avatar */}
+                <TouchableOpacity onPress={() => {
+                    router.push('profile')
                 }}>
                     <View>
-                        <Avatar imageUrl={avatarUrl} />
+                        <Avatar imageUrl={avatarUrl} height={wp(7.5)} width={wp(7.5)} />
                     </View>
-                </Pressable>
+                </TouchableOpacity>
             </View>
-
         </View >
 
     )
@@ -46,11 +45,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderBottomColor: theme.colors.darkLight,
         borderBottomWidth: wp(0.1),
-
+        paddingRight: wp(2),
+        paddingVertical: wp(.5),
     },
     rightContainer: {
         flexDirection: 'row',
-        gap: wp(1),
+        gap: wp(2),
         alignItems: 'center'
     },
     title: {

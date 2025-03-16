@@ -1,4 +1,4 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import React, { useState } from 'react';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import Input from '../../components/Input';
@@ -6,42 +6,49 @@ import { hp, wp } from '../../helpers/common';
 import Button from '../../components/Button';
 import { theme } from '../../constants/theme';
 import Icon from '../../assets/icons';
-import { getToken } from '../../utils/tokenManage';
 import Alert from '../../components/Alert';
-import axios from 'axios';
-
+import { createNewAlbum } from '../../utils/manageAlbums'
+import { useDispatch } from 'react-redux';
+import { addAlbums, addNewAlbum } from '../../features/album/albumSlice';
+import BackButton from '../../components/BackButton';
+import { useRouter } from 'expo-router';
 const CreateNew = () => {
     const [albumName, setAlbumName] = useState('');
     const [albumDescription, setAlbumDescription] = useState('');
     const [alertVisible, setAlertVisible] = useState(false);
     const [alertMessage, setAlertMessage] = useState('');
+    const dispatch = useDispatch();
+    const router = useRouter();
     const handleAlbumCreate = async () => {
-        console.log(albumName, albumDescription);
-        const accessToken = await getToken()
-        const response = await axios({
-            method: "POST",
-            url: `${process.env.EXPO_PUBLIC_API_URL}/albums/create-album`,
-            data: {
-                name: albumName,
-                description: albumDescription
-            },
-            header: {
-                'Content-Type': 'application/json',
-                "Authorization": `Bearer ${accessToken}`
-            }
-        })
-        if (response.data.success) {
-            setAlertMessage(response.data.message)
-            setAlertVisible(true)
+        if (!albumName || !albumDescription) {
+            setAlertMessage('Please fill both fields');
+            setAlertVisible(true);
+            return;
+        }
+
+        // call new album create method
+        const response = await createNewAlbum(albumName, albumDescription);
+
+        if (response.success) {
+            setAlertMessage(response.message);
+            setAlertVisible(true);
+            console.log(response.data);
+            dispatch(addNewAlbum(response.data));
+            setAlbumDescription('');
+            setAlbumName('');
         }
         else {
-            setAlertMessage(response.data.message)
-            setAlertVisible(true)
+            setAlertMessage(response.message);
+            setAlertVisible(true);
         }
     }
 
     return (
         <ScreenWrapper>
+            <View style={styles.header}>
+                <BackButton router={router} />
+                <Text style={styles.title}>Create New Album</Text>
+            </View>
             <View style={styles.container}>
                 <Input
                     placeholder='Add a title for the album'
@@ -59,7 +66,7 @@ const CreateNew = () => {
                 />
                 <View style={{ flexDirection: 'row', gap: wp(1) }}>
                     <Button title='Share' buttonStyle={styles.buttonStyle} icon={<Icon name={'share'} />} />
-                    <Button title='Invite People' buttonStyle={{ width: wp(25) }} icon={<Icon name={'invite'} color={'black'} />} />
+                    <Button title='Invite' buttonStyle={{ width: wp(25) }} icon={<Icon name={'invite'} color={'black'} />} />
                 </View>
                 <Button title='Create Album' onPress={handleAlbumCreate} />
             </View>
@@ -81,5 +88,17 @@ const styles = StyleSheet.create({
     buttonStyle: {
         backgroundColor: '#82e0aa',
         width: wp(18),
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        gap: wp(3)
+    },
+    title: {
+        fontSize: wp(3.5),
+        fontWeight: theme.fonts.semibold,
+        textAlign: 'center',
+        color: theme.colors.text
     },
 });

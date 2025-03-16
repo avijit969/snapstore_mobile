@@ -1,11 +1,10 @@
 {
   "expo": {
-    "name": "snapstore",
-    "slug": "snapstore",
-    "version": "1.0.0",
+    "name": "SnapStore",
+    "slug": "SnapStore",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.jpg",
@@ -19,7 +18,21 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.abhijit969.snapstore",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": {
+            "scheme": "https",
+            "host": "snapstore.aviscodeverse.tech"
+          },
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ]
     },
     "permissions": [
       "CAMERA",
@@ -33,14 +46,21 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app accesses your photos to let you share them with your friends."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
     },
+    "scheme": "snapstore",
     "extra": {
       "eas": {
-        "projectId": "6ca9c7fd-3045-4332-b862-d7357f69492e"
+        "projectId": "06f0baaa-7d4d-41c5-80ea-d71dfd44b5a7"
       }
     }
   }

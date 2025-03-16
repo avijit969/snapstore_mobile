@@ -14,6 +14,7 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/auth/authSlice';
 import { setToken } from '../utils/tokenManage';
+import { TouchableOpacity } from 'react-native';
 
 export default function Login() {
   const router = useRouter();
@@ -57,10 +58,10 @@ export default function Login() {
     } catch (error) {
       if (error.response && error.response.data) {
         // Handling known error from server response
-        setAlertMessage(error.response.data.message || 'An error occurred. Please try again.');
+        setAlertMessage(error.response.data.message || 'An error occurred. Please try again AVI.', process.env.EXPO_PUBLIC_API_URL);
       } else {
         // General error message
-        setAlertMessage('An error occurred. Please try again.');
+        setAlertMessage('An error occurred. Please try again JIT.', process.env.EXPO_PUBLIC_API_URL);
       }
       setAlertVisible(true);
     } finally {
@@ -96,7 +97,9 @@ export default function Login() {
             secureTextEntry
             value={password} // Keep password in sync with state
           />
-          <Text style={styles.forgotPassword}>Forgot password?</Text>
+          <TouchableOpacity onPress={() => router.push('forgotPassword')}>
+            <Text style={styles.forgotPassword}>Forgot password?</Text>
+          </TouchableOpacity>
 
           {/* Login button */}
           <Button title="Login" loading={loading} onPress={onSubmit} />

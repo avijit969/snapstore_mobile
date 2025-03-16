@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import axios from 'axios';
 import { getToken } from '../../utils/tokenManage';
-import { markAssetAsBackedUp } from '../../features/media/mediaSlice';
+import { markAssetAsBackedUp, removeAParticularAsset } from '../../features/media/mediaSlice';
 import Icon from '../../assets/icons';
 import { hp, wp } from '../../helpers/common';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
@@ -19,6 +19,7 @@ import dateCovertToLocalDate from '../../utils/manageDate';
 import { Image } from 'expo-image';
 import { mediaStyles } from './mediacss';
 import AddToAlbum from '../../components/AddToAlbum';
+import { deleteImage, deleteImageFromDevice } from '../../utils/managePhotos';
 export default function MediaViewer() {
   const mergedAssetsData = useSelector((state) => state.media.mergedAssets);
   const dispatch = useDispatch();
@@ -38,7 +39,6 @@ export default function MediaViewer() {
     addToAlbumRef.current?.present();
   }, []);
   const handleSheetChanges = useCallback((index) => {
-    console.log('handleSheetChanges', index);
   }, []);
 
   const renderBackdrop = useCallback(
@@ -59,7 +59,6 @@ export default function MediaViewer() {
     };
 
     fetchAssetInfo();
-    console.log('currentAsset', currentAsset);
   }, [currentIndex, currentAsset]);
   const renderItem = ({ item }) => {
     return item.mediaType === 'photo' ? (
@@ -101,7 +100,6 @@ export default function MediaViewer() {
           type: 'video/mp4'
         });
       }
-
       const response = await axios({
         method: 'POST',
         url: `${process.env.EXPO_PUBLIC_API_URL}/photos/upload-single`,
@@ -121,7 +119,6 @@ export default function MediaViewer() {
       }
       dispatch(markAssetAsBackedUp({ index: currentIndex }));
     } catch (error) {
-      console.log("Error uploading photo:", error.response?.data || error.message);
       Toaster({
         type: 'error',
         heading: 'failed!',
@@ -134,6 +131,28 @@ export default function MediaViewer() {
   const handleShare = () => {
     console.log('Share');
   };
+  const handleDelete = async () => {
+    try {
+      const response = currentAsset.isBackedUp ? await deleteImageFromDevice(currentAsset.id) : await deleteImage(currentAsset._id)
+      if (response.success) {
+        dispatch(removeAParticularAsset(currentIndex))
+        Toaster({
+          type: 'success',
+          heading: 'Success!',
+          message: response.message,
+          position: 'bottom'
+        })
+      }
+    } catch (error) {
+      Toaster({
+        type: 'error',
+        heading: 'failed!',
+        message: error.message,
+        position: 'bottom'
+      })
+    }
+  }
+
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, backgroundColor: 'black' }}>
@@ -192,7 +211,7 @@ export default function MediaViewer() {
                 <Text style={styles.BSButtonText}>Backup</Text>
               </View>
             </TouchableOpacity>)}
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleDelete}>
               <View style={styles.BSButton}>
                 <Icon name={'delete'} />
                 <Text style={styles.BSButtonText}>delete from {currentAsset?.isBackedUp ? 'cloud' : 'device'}</Text>
