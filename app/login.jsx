@@ -39,7 +39,6 @@ export default function Login() {
         username,
         password,
       });
-
       if (response.data.success) {
         // Handle successful login
         await setToken(response.data.data.accessToken);

@@ -15,7 +15,7 @@ import { useFocusEffect } from '@react-navigation/native'; // Import useFocusEff
 import HandelMultipleSelect from '../../components/HandelMultiPleSelect';
 import { theme } from '../../constants/theme';
 import UploadProgress from '../../components/UploadProgress';
-import Toast from 'react-native-toast-message';
+import Toaster from '../../components/Toaster';
 import Loading from '../../components/Loading';
 // Memoized component to prevent re-renders unless props change
 const RenderMediaItem = React.memo(({ item, index, handleMediaPress, handleLongPress, isSelected }) => (
@@ -233,12 +233,7 @@ const Photos = () => {
 
     useEffect(() => {
         if (toasterData?.type) {
-            Toast.show({
-                type: toasterData.type,
-                text1: toasterData.heading,
-                text2: toasterData.message,
-                position: toasterData.position,
-            })
+            Toaster(toasterData)
         }
     }, [toasterData]);
     if (loading && mergedAssetsf.length === 0) return
@@ -268,7 +263,7 @@ const Photos = () => {
                     }
                 />
             </View>
-            <Toast />
+
         </ScreenWrapper>
     );
 };

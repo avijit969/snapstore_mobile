@@ -15,7 +15,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { wp } from '../helpers/common'
 import { updateProfile } from '../utils/userManage'
 import Toaster from '../components/Toaster'
-import Toast from 'react-native-toast-message'
+
 
 const profile = () => {
     const dispatch = useDispatch()
@@ -205,7 +205,7 @@ const profile = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <Toast />
+
         </ScreenWrapper>
     )
 }

@@ -4,7 +4,7 @@ import { useLocalSearchParams } from 'expo-router';
 import ScreenWrapper from '../../components/ScreenWrapper';
 import { useSelector } from 'react-redux';
 import { Image } from 'expo-image';
-import { Video } from 'expo-av';
+import { Video } from 'expo-video';
 import * as Clipboard from 'expo-clipboard';
 
 const Page = () => {

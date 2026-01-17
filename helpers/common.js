@@ -6,7 +6,7 @@ export const hp = percentage => {
     return (percentage * deviceHeight) / 100
 }
 export const wp = percentage => {
-    return (percentage * deviceHeight) / 100
+    return (percentage * deviceWidth) / 100
 }
 
 export const getHeight = (height, width) => {

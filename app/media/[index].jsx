@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { View, Dimensions, StyleSheet, TouchableOpacity, Text } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import { Video } from 'expo-av';
+import { Video } from 'expo-video';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,12 +12,12 @@ import { markAssetAsBackedUp, removeAParticularAsset } from '../../features/medi
 import Icon from '../../assets/icons';
 import { hp, wp } from '../../helpers/common';
 import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import Toast from 'react-native-toast-message';
+
 import Toaster from '../../components/Toaster';
 import * as MediaLibrary from 'expo-media-library';
 import dateCovertToLocalDate from '../../utils/manageDate';
 import { Image } from 'expo-image';
-import { mediaStyles } from './mediacss';
+import { mediaStyles } from '../../constants/mediaStyles';
 import AddToAlbum from '../../components/AddToAlbum';
 import { deleteImage, deleteImageFromDevice } from '../../utils/managePhotos';
 export default function MediaViewer() {
@@ -171,7 +171,7 @@ export default function MediaViewer() {
             setCurrentIndex(index);
           }}
         />
-        <Toast />
+
         <View style={styles.toolbar}>
           <TouchableOpacity onPress={() => router.back()}>
             <Icon name={'arrowLeft'} height={30} width={30} color="white" />
@@ -253,7 +253,7 @@ export default function MediaViewer() {
             </View>)}
             <AddToAlbum bottomSheetModalRef={addToAlbumRef} />
           </View>
-          <Toast />
+
         </BottomSheetView>
       </BottomSheetModal>
     </ScreenWrapper>

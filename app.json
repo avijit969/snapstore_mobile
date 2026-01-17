@@ -23,15 +23,28 @@
       "intentFilters": [
         {
           "action": "VIEW",
+          "autoVerify": true,
           "data": {
             "scheme": "https",
-            "host": "snapstore.aviscodeverse.tech"
+            "host": "snapstore.trivyaa.in",
+            "pathPrefix": "/"
           },
           "category": [
             "BROWSABLE",
             "DEFAULT"
           ]
         }
+      ],
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_VISUAL_USER_SELECTED",
+        "android.permission.ACCESS_MEDIA_LOCATION",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_MEDIA_VIDEO",
+        "android.permission.READ_MEDIA_AUDIO"
       ]
     },
     "permissions": [
@@ -52,6 +65,32 @@
         {
           "photosPermission": "The app accesses your photos to let you share them with your friends."
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+        }
+      ],
+      [
+        "expo-video",
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos.",
+          "savePhotosPermission": "Allow $(PRODUCT_NAME) to save photos.",
+          "isAccessMediaLocationEnabled": true,
+          "granularPermissions": [
+            "photo",
+            "video",
+            "audio"
+          ]
+        }
       ]
     ],
     "experiments": {
@@ -59,8 +98,9 @@
     },
     "scheme": "snapstore",
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "06f0baaa-7d4d-41c5-80ea-d71dfd44b5a7"
+        "projectId": "fa9bb166-bc46-4771-a0e7-4d9d5e77a8fb"
       }
     }
   }

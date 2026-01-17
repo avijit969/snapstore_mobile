@@ -9,7 +9,7 @@ import { theme } from '../constants/theme'
 import Input from '../components/Input'
 import Button from '../components/Button'
 import Alert from '../components/Alert'
-import Toast from 'react-native-toast-message'
+
 import { changePassword } from '../utils/userManage'
 
 const page = () => {
@@ -67,7 +67,7 @@ const page = () => {
                 <Alert visible={alertVisible} message={alertMessage} onClose={() => setAlertVisible(false)} />
             </View>
             {/* Custom Alert */}
-            <Toast />
+
         </ScreenWrapper>
     )
 }

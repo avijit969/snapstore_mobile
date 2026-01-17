@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
-import { wp } from "../../helpers/common";
-import { theme } from "../../constants/theme";
+import { wp } from "../helpers/common";
+import { theme } from "./theme";
 
 export const mediaStyles = StyleSheet.create({
     toolbar: {
