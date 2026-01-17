@@ -8,24 +8,26 @@ import { useRouter } from 'expo-router'
 import { useSelector } from 'react-redux'
 import { TouchableOpacity } from 'react-native'
 import { RootState } from '@/store/store'
+import { useTheme } from '../contexts/ThemeContext'
 
 const Header = () => {
     const router = useRouter()
-    const userData = useSelector((state: RootState) => state.auth.userData) as any; // Type assertion needed or fix UserData type in authSlice
+    const { colors } = useTheme();
+    const userData = useSelector((state: RootState) => state.auth.userData) as any;
     const avatarUrl = userData?.user?.avatar
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { borderBottomColor: colors.border }]}>
             <Text style={styles.title}>SnapStore</Text>
             {/* upload button  */}
             <View style={styles.rightContainer}>
-                <TouchableOpacity onPress={() => router.push('backedup_images/allImages')}>
+                <TouchableOpacity onPress={() => router.push("backedup_images/allImages" as any)}>
                     <View>
-                        <Icon name={'cloudUpload'} color={theme.colors.dark} />
+                        <Icon name={'cloudUpload'} color={colors.text} />
                     </View>
                 </TouchableOpacity>
                 {/* profile avatar */}
                 <TouchableOpacity onPress={() => {
-                    router.push('profile')
+                    router.push("profile" as any)
                 }}>
                     <View>
                         <Avatar imageUrl={avatarUrl} height={wp(7.5)} width={wp(7.5)} />
@@ -55,7 +57,7 @@ const styles = StyleSheet.create({
         alignItems: 'center'
     },
     title: {
-        fontSize: wp(3.2),
+        fontSize: wp(5),
         fontWeight: theme.fonts.bold,
         color: theme.colors.primary,
         paddingLeft: wp(2)

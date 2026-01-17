@@ -9,24 +9,34 @@ import axios from 'axios'
 import { getToken } from '../utils/tokenManage'
 import { login } from '../features/auth/authSlice'
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  BottomSheetModalProvider,
-} from '@gorhom/bottom-sheet';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { ThemeProvider, useTheme } from '../contexts/ThemeContext';
 
 const _layout = () => {
 
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <Provider store={store}>
-          <StatusBar style='dark' />
-          <MainLayout />
-        </Provider>
-      </BottomSheetModalProvider>
+      <ThemeProvider>
+        <BottomSheetModalProvider>
+          <Provider store={store}>
+            <ThemedApp />
+          </Provider>
+        </BottomSheetModalProvider>
+      </ThemeProvider>
     </GestureHandlerRootView>
   )
 }
+
+const ThemedApp = () => {
+  const { isDark } = useTheme();
+
+  return (
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <MainLayout />
+    </>
+  );
+};
 
 const MainLayout = () => {
   const authStatus = useSelector((state: any) => state?.auth?.status)

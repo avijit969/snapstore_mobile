@@ -5,21 +5,26 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import Icon from '@/assets/icons'
 import { theme } from '@/constants/theme';
 import { hp, wp } from '@/helpers/common';
+import { useTheme } from '../../contexts/ThemeContext';
+
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: theme.colors.primary,
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textSecondary,
         headerShown: false,
         tabBarLabelStyle: {
           fontSize: wp(3),
-          fontWeight: 600,
+          fontWeight: "600",
         },
         tabBarStyle: {
           padding: wp(1),
-          height: hp(7)
+          height: hp(7),
+          backgroundColor: isDark ? colors.card : 'white',
+          borderTopColor: colors.border
         }
       }}>
       <Tabs.Screen

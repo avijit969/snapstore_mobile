@@ -10,6 +10,7 @@ import { useSelector } from 'react-redux'
 import { getImagesFromAlbum } from '../../utils/manageAlbums'
 import { FlashList } from '@shopify/flash-list'
 import { Image } from 'expo-image'
+import { useTheme } from '../../contexts/ThemeContext'
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COLUMN_COUNT = 3;
@@ -20,6 +21,7 @@ const Albums = () => {
     const { albums: albumId } = useLocalSearchParams<{ albums: string }>()
     const allAlbums = useSelector((state: any) => state.album.albums)
     const router = useRouter()
+    const { colors } = useTheme();
 
     // Find album by ID (handle string vs number id issues if any, assuming string from API)
     const currentAlbum = allAlbums.find((a: any) => a._id === albumId || a.id === albumId) || { name: 'Album not found', description: '' };
@@ -72,27 +74,27 @@ const Albums = () => {
     }
 
     return (
-        <ScreenWrapper bg='white'>
+        <ScreenWrapper bg={colors.background}>
             {/* header */}
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <BackButton router={router} />
-                    <Text style={styles.headerTitle} numberOfLines={1}>
+                    <Text style={[styles.headerTitle, { color: colors.text }]} numberOfLines={1}>
                         {currentAlbum.name || 'Album Details'}
                     </Text>
                 </View>
 
                 <View style={styles.rightContainer}>
                     <TouchableOpacity>
-                        <Icon name={"more"} color={theme.colors.primary} size={24} />
+                        <Icon name={"more"} color={colors.primary} size={24} />
                     </TouchableOpacity>
                 </View>
             </View>
 
             <View style={{ flex: 1 }}>
                 <View style={styles.albumMeta}>
-                    <Text style={styles.albumDescription}>{currentAlbum.description}</Text>
-                    <Text style={styles.stats}>{photos.length} photos</Text>
+                    <Text style={[styles.albumDescription, { color: colors.textSecondary }]}>{currentAlbum.description}</Text>
+                    <Text style={[styles.stats, { color: colors.textSecondary }]}>{photos.length} photos</Text>
                 </View>
 
                 {loading && !refreshing ? (
@@ -113,8 +115,8 @@ const Albums = () => {
                         }
                         ListEmptyComponent={
                             <View style={styles.emptyState}>
-                                <Text style={styles.emptyText}>No photos in this album yet.</Text>
-                                <TouchableOpacity style={styles.addBtn} onPress={() => alert('Feature coming soon!')}>
+                                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>No photos in this album yet.</Text>
+                                <TouchableOpacity style={[styles.addBtn, { backgroundColor: colors.primary }]} onPress={() => alert('Feature coming soon!')}>
                                     <Text style={styles.addBtnText}>Add Photos</Text>
                                 </TouchableOpacity>
                             </View>
@@ -139,7 +141,6 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: wp(4.5),
         fontWeight: theme.fonts.bold,
-        color: theme.colors.text,
         maxWidth: wp(60)
     },
     rightContainer: {
@@ -152,12 +153,10 @@ const styles = StyleSheet.create({
     },
     albumDescription: {
         fontSize: wp(3.5),
-        color: theme.colors.textLight,
         marginBottom: 4
     },
     stats: {
         fontSize: wp(3),
-        color: theme.colors.textLight,
         opacity: 0.7
     },
     center: {
@@ -171,11 +170,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20
     },
     emptyText: {
-        color: theme.colors.textLight,
         marginBottom: 20
     },
     addBtn: {
-        backgroundColor: theme.colors.primary,
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 20

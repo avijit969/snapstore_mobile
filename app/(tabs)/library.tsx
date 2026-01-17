@@ -12,12 +12,14 @@ import BackButton from '@/components/BackButton'
 import { FlashList } from '@shopify/flash-list'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { BottomSheetModal, BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet'
+import { useTheme } from '../../contexts/ThemeContext'
 // Removed LinearGradient as per request
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const GAP = wp(4);
 
 const Library = () => {
+    const { colors, isDark } = useTheme();
     const [loading, setLoading] = useState(true)
     const [refreshing, setRefreshing] = useState(false)
     const [editModalVisible, setEditModalVisible] = useState(false)
@@ -134,11 +136,14 @@ const Library = () => {
                     activeOpacity={0.7}
                     style={[styles.cardContainer, { marginRight: isGrid ? GAP : 0 }]}
                 >
-                    <View style={[styles.albumCard, cardStyle, styles.createNewCard]}>
-                        <View style={styles.iconCircle}>
-                            <Ionicons name="add" size={32} color={theme.colors.primary} />
+                    <View style={[styles.albumCard, cardStyle, styles.createNewCard, {
+                        backgroundColor: isDark ? colors.card : '#F9FAFB',
+                        borderColor: colors.border
+                    }]}>
+                        <View style={[styles.iconCircle, { backgroundColor: isDark ? colors.surface : '#EFF6FF' }]}>
+                            <Ionicons name="add" size={32} color={colors.primary} />
                         </View>
-                        <Text style={styles.createtext}>New Album</Text>
+                        <Text style={[styles.createtext, { color: colors.primary }]}>New Album</Text>
                     </View>
                 </TouchableOpacity>
             )
@@ -151,7 +156,7 @@ const Library = () => {
                 activeOpacity={0.9}
                 style={[styles.cardContainer, { marginRight: isGrid ? GAP : 0 }]}
             >
-                <View style={[styles.albumCard, cardStyle]}>
+                <View style={[styles.albumCard, cardStyle, { backgroundColor: colors.surface }]}>
                     {item.coverImage || item.image ? (
                         <Image
                             source={{ uri: item.coverImage || item.image }}
@@ -160,7 +165,7 @@ const Library = () => {
                             transition={500}
                         />
                     ) : (
-                        <View style={[styles.albumImage, styles.fallbackContainer]}>
+                        <View style={[styles.albumImage, styles.fallbackContainer, { backgroundColor: isDark ? colors.card : '#F3F4F6' }]}>
                             <Ionicons name="images-outline" size={isGrid ? 64 : 48} color={theme.colors.gray} />
                         </View>
                     )}
@@ -196,17 +201,17 @@ const Library = () => {
     );
 
     return (
-        <ScreenWrapper bg='white'>
+        <ScreenWrapper bg={colors.background}>
             <View style={styles.header}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <BackButton router={router} />
-                    <Text style={styles.title}>Library</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>Library</Text>
                 </View>
-                <TouchableOpacity onPress={() => setIsGrid(!isGrid)} style={styles.layoutBtn}>
+                <TouchableOpacity onPress={() => setIsGrid(!isGrid)} style={[styles.layoutBtn, { backgroundColor: isDark ? colors.card : '#f0f0f0' }]}>
                     <Ionicons
                         name={isGrid ? "list" : "grid"}
                         size={24}
-                        color={theme.colors.text}
+                        color={colors.text}
                     />
                 </TouchableOpacity>
             </View>
@@ -239,27 +244,27 @@ const Library = () => {
                 index={0}
                 snapPoints={['30%']}
                 backdropComponent={renderBackdrop}
-                backgroundStyle={{ borderRadius: 24 }}
+                backgroundStyle={{ borderRadius: 24, backgroundColor: colors.surface }}
             >
                 <BottomSheetView style={styles.contentContainer}>
-                    <Text style={styles.sheetTitle}>Manage Album</Text>
+                    <Text style={[styles.sheetTitle, { color: colors.text }]}>Manage Album</Text>
                     {selectedAlbum && (
-                        <Text style={styles.sheetSubtitle}>{selectedAlbum.name}</Text>
+                        <Text style={[styles.sheetSubtitle, { color: colors.textSecondary }]}>{selectedAlbum.name}</Text>
                     )}
 
                     <View style={styles.sheetActions}>
                         <TouchableOpacity style={styles.actionRow} onPress={openEditModal}>
-                            <View style={[styles.actionIcon, { backgroundColor: '#EEF2FF' }]}>
+                            <View style={[styles.actionIcon, { backgroundColor: isDark ? colors.card : '#EEF2FF' }]}>
                                 <Feather name="edit-2" size={20} color={theme.colors.primary} />
                             </View>
-                            <Text style={styles.actionText}>Edit Details</Text>
-                            <Feather name="chevron-right" size={20} color="#C7C7CC" style={{ marginLeft: 'auto' }} />
+                            <Text style={[styles.actionText, { color: colors.text }]}>Edit Details</Text>
+                            <Feather name="chevron-right" size={20} color={colors.textSecondary} style={{ marginLeft: 'auto' }} />
                         </TouchableOpacity>
 
-                        <View style={styles.divider} />
+                        <View style={[styles.divider, { backgroundColor: colors.border }]} />
 
                         <TouchableOpacity style={styles.actionRow} onPress={handleDeleteAlbum}>
-                            <View style={[styles.actionIcon, { backgroundColor: '#FEF2F2' }]}>
+                            <View style={[styles.actionIcon, { backgroundColor: isDark ? colors.card : '#FEF2F2' }]}>
                                 <Feather name="trash-2" size={20} color={theme.colors.rose} />
                             </View>
                             <Text style={[styles.actionText, { color: theme.colors.rose }]}>Delete Album</Text>
@@ -277,36 +282,44 @@ const Library = () => {
                 onRequestClose={() => setEditModalVisible(false)}
             >
                 <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Edit Album</Text>
+                    <View style={[styles.modalContent, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.modalTitle, { color: colors.text }]}>Edit Album</Text>
 
-                        <Text style={styles.label}>Name</Text>
+                        <Text style={[styles.label, { color: colors.textSecondary }]}>Name</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, {
+                                borderColor: colors.border,
+                                color: colors.text,
+                                backgroundColor: isDark ? colors.card : '#F9FAFB'
+                            }]}
                             value={newAlbumName}
                             onChangeText={setNewAlbumName}
                             placeholder="Album Name"
-                            placeholderTextColor={theme.colors.textLight}
+                            placeholderTextColor={colors.textSecondary}
                         />
 
-                        <Text style={styles.label}>Description</Text>
+                        <Text style={[styles.label, { color: colors.textSecondary }]}>Description</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, {
+                                borderColor: colors.border,
+                                color: colors.text,
+                                backgroundColor: isDark ? colors.card : '#F9FAFB'
+                            }]}
                             value={newAlbumDesc}
                             onChangeText={setNewAlbumDesc}
                             placeholder="Description (Optional)"
-                            placeholderTextColor={theme.colors.textLight}
+                            placeholderTextColor={colors.textSecondary}
                         />
 
                         <View style={styles.modalActions}>
                             <Pressable
-                                style={[styles.btn, styles.btnCancel]}
+                                style={[styles.btn, styles.btnCancel, { backgroundColor: isDark ? colors.card : '#F3F4F6' }]}
                                 onPress={() => setEditModalVisible(false)}
                             >
-                                <Text style={styles.btnTextCancel}>Cancel</Text>
+                                <Text style={[styles.btnTextCancel, { color: colors.text }]}>Cancel</Text>
                             </Pressable>
                             <Pressable
-                                style={[styles.btn, styles.btnSave]}
+                                style={[styles.btn, styles.btnSave, { backgroundColor: colors.primary }]}
                                 onPress={handleUpdateAlbum}
                             >
                                 <Text style={styles.btnTextSave}>Save</Text>
@@ -332,7 +345,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: wp(7),
         fontWeight: theme.fonts.bold,
-        color: theme.colors.text,
         letterSpacing: 0.5,
         marginLeft: 10
     },
@@ -356,14 +368,11 @@ const styles = StyleSheet.create({
     albumCard: {
         borderRadius: 16,
         overflow: 'hidden',
-        backgroundColor: '#fff',
     },
     createNewCard: {
-        backgroundColor: '#F9FAFB',
         justifyContent: 'center',
         alignItems: 'center',
         borderWidth: 1.5,
-        borderColor: '#E5E7EB',
         borderStyle: 'dashed',
         elevation: 0,
         shadowOpacity: 0
@@ -372,7 +381,6 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 30,
-        backgroundColor: '#EFF6FF',
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 12
@@ -380,14 +388,12 @@ const styles = StyleSheet.create({
     createtext: {
         fontSize: wp(4),
         fontWeight: theme.fonts.semibold,
-        color: theme.colors.primary
     },
     albumImage: {
         width: '100%',
         height: '100%',
     },
     fallbackContainer: {
-        backgroundColor: '#F3F4F6',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -431,12 +437,10 @@ const styles = StyleSheet.create({
     sheetTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: theme.colors.text,
         textAlign: 'center',
     },
     sheetSubtitle: {
         fontSize: 14,
-        color: theme.colors.textLight,
         textAlign: 'center',
         marginBottom: 24,
         marginTop: 4
@@ -461,7 +465,6 @@ const styles = StyleSheet.create({
     actionText: {
         fontSize: 16,
         fontWeight: '600',
-        color: theme.colors.text
     },
     divider: {
         height: 1,
@@ -478,7 +481,6 @@ const styles = StyleSheet.create({
         padding: 20
     },
     modalContent: {
-        backgroundColor: 'white',
         borderRadius: 24,
         padding: 24,
         width: '100%',
@@ -493,23 +495,18 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: theme.colors.text
     },
     label: {
         fontSize: 14,
-        color: theme.colors.textLight,
         marginBottom: 8,
         marginTop: 10,
         fontWeight: theme.fonts.medium
     },
     input: {
         borderWidth: 1,
-        borderColor: '#E5E7EB',
         borderRadius: 12,
         padding: 14,
         fontSize: 16,
-        color: theme.colors.text,
-        backgroundColor: '#F9FAFB'
     },
     modalActions: {
         flexDirection: 'row',

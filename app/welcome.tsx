@@ -1,24 +1,25 @@
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-import { StatusBar } from 'expo-status-bar'
 import { hp, wp } from '../helpers/common'
 import { theme } from '../constants/theme'
 import ScreenWrapper from '../components/ScreenWrapper'
 import Button from '../components/Button'
 import { useRouter } from 'expo-router'
+import { useTheme } from '../contexts/ThemeContext'
 
 const Welcome = () => {
     const router = useRouter()
+    const { colors } = useTheme();
+
     return (
-        <ScreenWrapper bg='white'>
-            <StatusBar style='dark' />
-            <View style={styles.container}>
-                <Image style={styles.welcomeImage} resizeMode='contain' source={require('../assets/images/welcome.jpg')} />
+        <ScreenWrapper bg={colors.background}>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
+                <Image style={styles.welcomeImage} resizeMode='contain' source={require('../assets/images/welcome.png')} />
                 {/* title */}
                 <View style={{ gap: 4 }}>
-                    <Text style={styles.title}>SnapStore</Text>
-                    <Text style={styles.punchLine}>Welcome to SnapStore, securely back up your photos and videos in the cloud!</Text>
+                    <Text style={[styles.title, { color: colors.text }]}>SnapStore</Text>
+                    <Text style={[styles.punchLine, { color: colors.text }]}>Welcome to SnapStore, securely back up your photos and videos in the cloud!</Text>
                 </View>
                 {/* footer */}
                 <View style={styles.footer} >
@@ -29,11 +30,11 @@ const Welcome = () => {
                 </View>
 
                 <View style={[styles.buttonTextContainer]}>
-                    <Text style={[styles.loginText]} >
+                    <Text style={[styles.loginText, { color: colors.text }]} >
                         Already have an account!
                     </Text>
                     <Pressable onPress={() => router.push('login')}>
-                        <Text style={[styles.loginText, { color: theme.colors.primaryDark, fontWeight: theme.fonts.semibold }]}>
+                        <Text style={[styles.loginText, { color: colors.primary, fontWeight: theme.fonts.semibold }]}>
                             logIn
                         </Text>
                     </Pressable>
@@ -50,7 +51,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-        backgroundColor: 'white',
         paddingHorizontal: wp(4)
     },
     welcomeImage: {
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     title: {
-        color: theme.colors.text,
         fontSize: hp(4),
         textAlign: 'center',
         fontWeight: theme.fonts.extraBold
@@ -68,7 +67,6 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: wp(4),
         fontSize: hp(2.4),
-        color: theme.colors.text
     },
     footer: {
         gap: 30,
@@ -82,7 +80,6 @@ const styles = StyleSheet.create({
     },
     loginText: {
         textAlign: 'center',
-        color: theme.colors.text,
         fontSize: hp(2)
     }
 })

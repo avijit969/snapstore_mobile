@@ -20,6 +20,7 @@ import Toaster from '../../components/Toaster';
 import Loading from '../../components/Loading';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COLUMN_COUNT = 3;
@@ -95,6 +96,7 @@ const RenderMediaItem = React.memo(({ item, index, handleMediaPress, handleLongP
 ));
 
 const Photos = () => {
+    const { colors, isDark } = useTheme();
     const [hasPermission, setHasPermission] = useState<boolean | null>(null);
     const [endCursor, setEndCursor] = useState<string | null>(null);
     const [hasNextPage, setHasNextPage] = useState(false);
@@ -236,16 +238,7 @@ const Photos = () => {
         setRefreshing(true);
         setEndCursor(null);
         setMergedAssetsf([]);
-        setHasNextPage(false); // Reset this too
-        // We need to wait a tick or ensure loadMediaFiles uses fresh state if we were to just call it. 
-        // But since we reset state, passing null to loadMediaFiles in a generic way is better. 
-        // For simplicity, we just reload the page/component or manually trigger:
-
-        // Actually, best way is to reset state and then let effect trigger or call load manually
-        // But loadMediaFiles checks state.
-        // Let's just create a fresh load function logic or simplify:
-
-        // Resetting needs to handle the cleanup first.
+        setHasNextPage(false);
         const mediaOptions = {
             mediaType: ['photo', 'video'],
             first: 60,
@@ -337,14 +330,14 @@ const Photos = () => {
 
     if (loading && mergedAssetsf.length === 0) {
         return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'white' }}>
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
                 <Loading color={theme.colors.primary} />
             </View>
         )
     }
 
     return (
-        <ScreenWrapper bg='white'>
+        <ScreenWrapper bg={colors.background}>
             <Header />
             <View style={{ flex: 1 }}>
                 {selectedItems.length > 0 && (
@@ -359,8 +352,8 @@ const Photos = () => {
 
                 {mergedAssetsData.length === 0 && !loading ? (
                     <View style={styles.emptyState}>
-                        <Ionicons name="images-outline" size={64} color={theme.colors.textLight} />
-                        <Text style={styles.emptyText}>No photos found</Text>
+                        <Ionicons name="images-outline" size={64} color={colors.textSecondary} />
+                        <Text style={[styles.emptyText, { color: colors.text }]}>No photos found</Text>
                     </View>
                 ) : (
                     <FlashList
@@ -395,7 +388,7 @@ const styles = StyleSheet.create({
     },
     blurIconBackground: {
         padding: 4,
-        borderRadius: 12, // Match container
+        borderRadius: 12,
     },
     selectionOverlay: {
         position: 'absolute',
@@ -417,7 +410,6 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         marginTop: 10,
-        color: theme.colors.text,
         fontSize: wp(4),
         fontFamily: theme.fonts.medium,
     },

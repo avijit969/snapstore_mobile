@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Pressable, TouchableOpacity } from 'react-nativ
 import ScreenWrapper from '../components/ScreenWrapper';
 import { theme } from '../constants/theme';
 import Icon from '../assets/icons';
-import { StatusBar } from 'expo-status-bar';
 import BackButton from '../components/BackButton';
 import { useRouter } from 'expo-router';
 import { hp, wp } from '../helpers/common';
@@ -14,10 +13,12 @@ import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { login } from '../features/auth/authSlice';
 import { setToken } from '../utils/tokenManage';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function Login() {
     const router = useRouter();
     const dispatch = useDispatch();
+    const { colors } = useTheme();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [loading, setLoading] = useState(false);
@@ -68,35 +69,34 @@ export default function Login() {
     };
 
     return (
-        <ScreenWrapper>
-            <StatusBar style="dark" />
-            <View style={styles.container}>
+        <ScreenWrapper bg={colors.background}>
+            <View style={[styles.container, { backgroundColor: colors.background }]}>
                 <BackButton router={router} />
 
                 {/* Welcome message */}
                 <View>
-                    <Text style={styles.welcomeText}>Hey,</Text>
-                    <Text style={styles.welcomeText}>Welcome Back</Text>
+                    <Text style={[styles.welcomeText, { color: colors.text }]}>Hey,</Text>
+                    <Text style={[styles.welcomeText, { color: colors.text }]}>Welcome Back</Text>
                 </View>
 
                 {/* Input form */}
                 <View style={styles.form}>
-                    <Text style={{ fontSize: hp(2), color: theme.colors.text }}>Please login to continue</Text>
+                    <Text style={{ fontSize: hp(2), color: colors.text }}>Please login to continue</Text>
                     <Input
-                        icon={<Icon name="user" size={26} strokeWidth={1.6} />}
+                        icon={<Icon name="user" size={26} strokeWidth={1.6} color={colors.text} />}
                         placeholder="Enter your username"
                         onChangeText={setUsername}
                         value={username} // Keep username in sync with state
                     />
                     <Input
-                        icon={<Icon name="lock" size={26} strokeWidth={1.6} />}
+                        icon={<Icon name="lock" size={26} strokeWidth={1.6} color={colors.text} />}
                         placeholder="Enter your password"
                         onChangeText={setPassword}
                         secureTextEntry
                         value={password} // Keep password in sync with state
                     />
                     <TouchableOpacity onPress={() => router.push('forgotPassword' as any)}>
-                        <Text style={styles.forgotPassword}>Forgot password?</Text>
+                        <Text style={[styles.forgotPassword, { color: colors.text }]}>Forgot password?</Text>
                     </TouchableOpacity>
 
                     {/* Login button */}
@@ -105,7 +105,7 @@ export default function Login() {
 
                 {/* Footer */}
                 <View style={styles.footer}>
-                    <Text style={styles.footerText}>Don't have an account?</Text>
+                    <Text style={[styles.footerText, { color: colors.text }]}>Don't have an account?</Text>
                     <Pressable onPress={() => router.push('signUp' as any)}>
                         <Text style={[styles.footerText, { color: theme.colors.primaryDark, fontWeight: theme.fonts.semibold }]}>
                             Sign Up
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
     welcomeText: {
         fontSize: hp(4),
         fontWeight: theme.fonts.bold,
-        color: theme.colors.text,
     },
     form: {
         gap: 25,
@@ -137,7 +136,6 @@ const styles = StyleSheet.create({
     forgotPassword: {
         textAlign: 'right',
         fontWeight: theme.fonts.semibold,
-        color: theme.colors.text,
     },
     footer: {
         flexDirection: 'row',
@@ -147,7 +145,6 @@ const styles = StyleSheet.create({
     },
     footerText: {
         textAlign: 'center',
-        color: theme.colors.text,
         fontSize: hp(2),
     },
 });

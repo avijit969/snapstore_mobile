@@ -10,11 +10,13 @@ import { useDispatch } from 'react-redux';
 import { addNewAlbum } from '../../features/album/albumSlice';
 import BackButton from '../../components/BackButton';
 import { useRouter } from 'expo-router';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CreateNew = () => {
     const [albumName, setAlbumName] = useState('');
     const [albumDescription, setAlbumDescription] = useState('');
     const [loading, setLoading] = useState(false);
+    const { colors, isDark } = useTheme();
 
     const dispatch = useDispatch();
     const router = useRouter();
@@ -47,10 +49,10 @@ const CreateNew = () => {
     }
 
     return (
-        <ScreenWrapper bg='white'>
+        <ScreenWrapper bg={colors.background}>
             <View style={styles.header}>
                 <BackButton router={router} />
-                <Text style={styles.title}>New Album</Text>
+                <Text style={[styles.title, { color: colors.text }]}>New Album</Text>
                 <View style={{ width: 30 }} />
             </View>
 
@@ -61,24 +63,24 @@ const CreateNew = () => {
                 >
                     <View style={styles.form}>
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Album Title</Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Album Title</Text>
                             <Input
                                 placeholder='e.g., Summer Vacation 2024'
-                                placeholderTextColor={theme.colors.textLight}
-                                containerStyles={styles.inputContainer}
+                                placeholderTextColor={colors.textSecondary}
+                                containerStyles={[styles.inputContainer, { borderColor: colors.border, backgroundColor: isDark ? colors.card : '#FAFAFA' }]}
                                 onChangeText={setAlbumName}
                                 value={albumName}
                             />
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Description <Text style={styles.optional}>(Optional)</Text></Text>
+                            <Text style={[styles.label, { color: colors.text }]}>Description <Text style={[styles.optional, { color: colors.textSecondary }]}>(Optional)</Text></Text>
                             <Input
                                 multiline={true}
                                 numberOfLines={4}
                                 placeholder="What's this album about?"
-                                placeholderTextColor={theme.colors.textLight}
-                                containerStyles={[styles.inputContainer, styles.textArea] as any}
+                                placeholderTextColor={colors.textSecondary}
+                                containerStyles={[styles.inputContainer, styles.textArea, { borderColor: colors.border, backgroundColor: isDark ? colors.card : '#FAFAFA' }] as any}
                                 onChangeText={setAlbumDescription}
                                 value={albumDescription}
                             />
@@ -90,7 +92,7 @@ const CreateNew = () => {
                             title='Create Album'
                             onPress={handleAlbumCreate}
                             loading={loading}
-                            buttonStyle={styles.createBtn}
+                            buttonStyle={[styles.createBtn, { backgroundColor: colors.primary }]}
                             textStyle={styles.createBtnText}
                         />
                     </View>
@@ -113,8 +115,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: wp(5),
-        fontWeight: theme.fonts.bold,
-        color: theme.colors.text
+        fontWeight: theme.fonts.bold
     },
     container: {
         flex: 1,
@@ -128,21 +129,17 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: wp(3.5),
-        fontWeight: theme.fonts.medium,
-        color: theme.colors.text,
+        fontWeight: theme.fonts.medium
     },
     optional: {
-        color: theme.colors.textLight,
         fontSize: wp(3),
         fontWeight: 'normal'
     },
     inputContainer: {
         borderWidth: 1,
-        borderColor: theme.colors.darkLight,
         borderRadius: theme.radius.md,
         paddingHorizontal: 15,
-        height: hp(6.5),
-        backgroundColor: '#FAFAFA'
+        height: hp(6.5)
     },
     textArea: {
         height: hp(15),
@@ -153,9 +150,7 @@ const styles = StyleSheet.create({
         marginTop: hp(5),
     },
     createBtn: {
-        backgroundColor: theme.colors.primary,
         borderRadius: theme.radius.xl,
-        shadowColor: theme.colors.primary,
         shadowOffset: {
             width: 0,
             height: 4,

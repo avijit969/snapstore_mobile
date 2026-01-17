@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, Pressable, ScrollView } from 'react-native';
 import ScreenWrapper from '../components/ScreenWrapper';
 import { theme } from '../constants/theme';
 import Icon from '../assets/icons';
-import { StatusBar } from 'expo-status-bar';
 import BackButton from '../components/BackButton';
 import { useRouter } from 'expo-router';
 import { hp, wp } from '../helpers/common';
@@ -11,9 +10,11 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import Alert from '../components/Alert';
 import axios from 'axios';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function SignUp() {
     const router = useRouter();
+    const { colors } = useTheme();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
@@ -60,43 +61,42 @@ export default function SignUp() {
     };
 
     return (
-        <ScreenWrapper>
-            <StatusBar style="dark" />
-            <ScrollView>
-                <View style={styles.container}>
+        <ScreenWrapper bg={colors.background}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={[styles.container, { backgroundColor: colors.background }]}>
                     <BackButton router={router} />
 
                     {/* Welcome message */}
                     <View>
-                        <Text style={styles.welcomeText}>let's</Text>
-                        <Text style={styles.welcomeText}>Get Started</Text>
+                        <Text style={[styles.welcomeText, { color: colors.text }]}>let's</Text>
+                        <Text style={[styles.welcomeText, { color: colors.text }]}>Get Started</Text>
                     </View>
 
                     {/* Input form */}
                     <View style={styles.form}>
-                        <Text style={{ fontSize: hp(2), color: theme.colors.text }}>
+                        <Text style={{ fontSize: hp(2), color: colors.text }}>
                             Please fill the details to create an account
                         </Text>
                         <Input
-                            icon={<Icon name={'user'} size={26} strokeWidth={1.6} />}
+                            icon={<Icon name={'user'} size={26} strokeWidth={1.6} color={colors.text} />}
                             placeholder="Enter your name"
                             onChangeText={setName}
                             value={name}
                         />
                         <Input
-                            icon={<Icon name={'user'} size={26} strokeWidth={1.6} />}
+                            icon={<Icon name={'user'} size={26} strokeWidth={1.6} color={colors.text} />}
                             placeholder="Enter your username"
                             onChangeText={setUsername}
                             value={username}
                         />
                         <Input
-                            icon={<Icon name={'email'} size={26} strokeWidth={1.6} />}
+                            icon={<Icon name={'email'} size={26} strokeWidth={1.6} color={colors.text} />}
                             placeholder="Enter your email"
                             onChangeText={setEmail}
                             value={email}
                         />
                         <Input
-                            icon={<Icon name={'lock'} size={26} strokeWidth={1.6} />}
+                            icon={<Icon name={'lock'} size={26} strokeWidth={1.6} color={colors.text} />}
                             placeholder="Enter your password"
                             onChangeText={setPassword}
                             value={password}
@@ -109,7 +109,7 @@ export default function SignUp() {
 
                     {/* Footer */}
                     <View style={styles.footer}>
-                        <Text style={styles.footerText}>Already have an account?</Text>
+                        <Text style={[styles.footerText, { color: colors.text }]}>Already have an account?</Text>
                         <Pressable onPress={() => router.push('login' as any)}>
                             <Text
                                 style={[
@@ -139,7 +139,6 @@ const styles = StyleSheet.create({
     welcomeText: {
         fontSize: hp(4),
         fontWeight: theme.fonts.bold,
-        color: theme.colors.text,
     },
     form: {
         gap: 25,
@@ -152,7 +151,6 @@ const styles = StyleSheet.create({
     },
     footerText: {
         textAlign: 'center',
-        color: theme.colors.text,
         fontSize: hp(2),
     },
 });

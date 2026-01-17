@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle } from 'react-native'
+import { Pressable, StyleSheet, Text, TextStyle, View, ViewStyle, TouchableOpacity } from 'react-native'
 import React, { ReactNode } from 'react'
 import { theme } from '../constants/theme'
 import { wp, hp } from '../helpers/common'
 import Loading from './Loading'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+import { useTheme } from '../contexts/ThemeContext'
 
 interface ButtonProps {
     buttonStyle?: ViewStyle | ViewStyle[];
@@ -27,19 +27,22 @@ const Button = (
         icon
     }: ButtonProps
 ) => {
+    const { colors, isDark } = useTheme();
+
     const shadowStyle = {
-        shadowColor: theme.colors.dark,
+        shadowColor: isDark ? colors.text : theme.colors.dark,
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.5,
         shadowRadius: 8,
         elevation: 4
     }
     const disabledStyle = {
-        backgroundColor: theme.colors.disabled
+        backgroundColor: theme.colors.disabled,
+        opacity: 0.5
     }
     if (loading) {
         return (
-            <View style={[styles.button, buttonStyle, { backgroundColor: 'white' }]}>
+            <View style={[styles.button, buttonStyle, { backgroundColor: isDark ? colors.card : 'white' }]}>
                 <Loading />
             </View>
         )

@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { RootState } from '@/store/store';
 import { Ionicons } from '@expo/vector-icons';
 import BackButton from '@/components/BackButton';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const COLUMN_COUNT = 2;
@@ -21,6 +22,7 @@ const GAP = wp(1);
 const ITEM_WIDTH = (SCREEN_WIDTH - (COLUMN_COUNT + 1) * GAP) / COLUMN_COUNT;
 
 const AllImages = () => {
+    const { colors, isDark } = useTheme();
     const [remoteAssetsState, setRemoteAssetsState] = useState<any[]>([]);
     const [hasNextPage, setHasNextPage] = useState(true);
     const [loading, setLoading] = useState(false);
@@ -96,7 +98,7 @@ const AllImages = () => {
                 activeOpacity={0.9}
                 style={styles.itemContainer}
             >
-                <View style={[styles.imageWrapper, { height: itemHeight }]}>
+                <View style={[styles.imageWrapper, { height: itemHeight, backgroundColor: colors.surface }]}>
                     <Image
                         source={secureUrl}
                         style={styles.image}
@@ -113,18 +115,18 @@ const AllImages = () => {
                 </View>
             </TouchableOpacity>
         );
-    }, [handlePress]);
+    }, [handlePress, colors.surface]);
 
     const ListHeaderComponent = () => (
         <View style={styles.header}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: hp(2) }}>
                 <BackButton router={router} />
-                <Text style={styles.title}>Backed Up</Text>
+                <Text style={[styles.title, { color: colors.text }]}>Backed Up</Text>
             </View>
             {totalImage > 0 && (
-                <View style={styles.statsCard}>
+                <View style={[styles.statsCard, { backgroundColor: isDark ? colors.card : '#F0F9FF' }]}>
                     <Ionicons name="cloud-done" size={24} color={theme.colors.primary} />
-                    <Text style={styles.statsText}>
+                    <Text style={[styles.statsText, { color: colors.text }]}>
                         <Text style={styles.statsNumber}>{totalImage}</Text> photos backed up
                     </Text>
                 </View>
@@ -135,20 +137,20 @@ const AllImages = () => {
     const ListEmptyComponent = () => (
         !loading && (
             <View style={styles.emptyState}>
-                <Ionicons name="cloud-offline-outline" size={64} color={theme.colors.textLight} />
-                <Text style={styles.emptyText}>No backed up photos yet</Text>
-                <Text style={styles.emptySubtext}>Your uploaded photos will appear here</Text>
+                <Ionicons name="cloud-offline-outline" size={64} color={colors.textSecondary} />
+                <Text style={[styles.emptyText, { color: colors.text }]}>No backed up photos yet</Text>
+                <Text style={[styles.emptySubtext, { color: colors.textSecondary }]}>Your uploaded photos will appear here</Text>
             </View>
         )
     );
 
     return (
-        <ScreenWrapper bg='white'>
+        <ScreenWrapper bg={colors.background}>
             <View style={{ flex: 1 }}>
                 {loading && assets.length === 0 ? (
                     <View style={styles.loadingContainer}>
                         <Loading color={theme.colors.primary} />
-                        <Text style={styles.loadingText}>Loading your photos...</Text>
+                        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading your photos...</Text>
                     </View>
                 ) : (
                     <FlashList
@@ -195,14 +197,12 @@ const styles = StyleSheet.create({
     title: {
         fontSize: wp(7),
         fontWeight: theme.fonts.bold,
-        color: theme.colors.text,
         letterSpacing: 0.5,
         marginLeft: 10,
     },
     statsCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F0F9FF',
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderRadius: 12,
@@ -210,7 +210,6 @@ const styles = StyleSheet.create({
     },
     statsText: {
         fontSize: 15,
-        color: theme.colors.text,
         fontWeight: theme.fonts.medium,
     },
     statsNumber: {
@@ -229,7 +228,6 @@ const styles = StyleSheet.create({
     },
     imageWrapper: {
         width: '100%',
-        backgroundColor: '#F3F4F6',
         borderRadius: 12,
         overflow: 'hidden',
         position: 'relative',
@@ -270,7 +268,6 @@ const styles = StyleSheet.create({
     },
     loadingText: {
         fontSize: 16,
-        color: theme.colors.textLight,
         fontWeight: theme.fonts.medium,
     },
     emptyState: {
@@ -284,12 +281,10 @@ const styles = StyleSheet.create({
         marginTop: 16,
         fontSize: 18,
         fontWeight: theme.fonts.semibold,
-        color: theme.colors.text,
     },
     emptySubtext: {
         marginTop: 8,
         fontSize: 14,
-        color: theme.colors.textLight,
         textAlign: 'center',
     },
     footerLoading: {

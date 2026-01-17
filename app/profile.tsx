@@ -1,26 +1,25 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native'
+import { Pressable, StyleSheet, Text, View, Switch, ScrollView, Alert } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import ScreenWrapper from '../components/ScreenWrapper'
 import { useDispatch, useSelector } from 'react-redux'
 import { logout, setUserData } from '../features/auth/authSlice'
-import Button from '../components/Button'
 import { useRouter } from 'expo-router'
 import { Image } from 'expo-image'
-import { theme } from '../constants/theme'
 import Input from '../components/Input'
 import { TouchableOpacity } from 'react-native'
 import BackButton from '../components/BackButton'
-import Icon from '../assets/icons'
+import { Feather, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
-import { wp } from '../helpers/common'
+import { wp, hp } from '../helpers/common'
 import { updateProfile } from '../utils/userManage'
 import Toaster from '../components/Toaster'
 import { RootState } from '@/store/store'
-
+import { useTheme } from '../contexts/ThemeContext'
 
 const Profile = () => {
     const dispatch = useDispatch()
     const router = useRouter()
+    const { theme, isDark, setTheme, colors } = useTheme()
     const userData = useSelector((state: RootState) => state.auth.userData) as any;
 
     const [isEditing, setIsEditing] = useState(false)
@@ -30,10 +29,6 @@ const Profile = () => {
         email: userData?.user?.email || '',
     })
     const [avatar, setAvatar] = useState(userData?.user?.avatar)
-
-    useEffect(() => {
-        console.log(JSON.stringify(userData, null, 4)) // Debugging
-    }, [])
 
     // Handle input changes
     const handleChange = (field: string, value: string) => {
@@ -48,7 +43,7 @@ const Profile = () => {
         try {
             const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync()
             if (!permissionResult.granted) {
-                alert('Permission to access media library is required!')
+                Alert.alert('Permission Required', 'Permission to access media library is required!')
                 return
             }
             const pickerResult = await ImagePicker.launchImageLibraryAsync({
@@ -64,7 +59,7 @@ const Profile = () => {
             }
         } catch (error) {
             console.error('Error editing avatar:', error)
-            alert('An error occurred while updating your avatar. Please try again.')
+            Alert.alert('Error', 'An error occurred while updating your avatar.')
         }
     }
 
@@ -72,6 +67,7 @@ const Profile = () => {
     const toggleEditMode = () => {
         setIsEditing(!isEditing)
     }
+
     const handleCancel = () => {
         setIsEditing(false)
         setFormData({
@@ -84,7 +80,6 @@ const Profile = () => {
 
     // Save profile changes
     const handleSaveProfile = async () => {
-        console.log(formData, avatar)
         const form = new FormData()
         form.append('fullName', formData.fullName)
         form.append('username', formData.username)
@@ -100,113 +95,191 @@ const Profile = () => {
             Toaster({
                 type: 'success',
                 message: response.message,
-                position: 'top'
+                position: 'top',
+                heading: 'Success!'
             })
             dispatch(setUserData(response.data))
-        }
-        else {
+        } else {
             Toaster({
                 type: 'error',
                 message: response.message,
-                position: 'top'
+                position: 'top',
+                heading: 'Error!'
             })
         }
 
         setIsEditing(false)
     }
 
+    const handleLogout = () => {
+        Alert.alert(
+            'Logout',
+            'Are you sure you want to logout?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Logout',
+                    style: 'destructive',
+                    onPress: () => {
+                        router.dismissAll()
+                        dispatch(logout())
+                    }
+                }
+            ]
+        );
+    }
+
     return (
-        <ScreenWrapper>
+        <ScreenWrapper bg={colors.background}>
             {/* Header */}
-            <View style={styles.header}>
-                <BackButton router={router} />
-                <Text style={styles.title}>Profile</Text>
+            <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+                    <BackButton router={router} />
+                    <Text style={[styles.title, { color: colors.text }]}>Profile</Text>
+                </View>
+                {!isEditing && (
+                    <TouchableOpacity onPress={toggleEditMode} style={[styles.iconButton, { backgroundColor: colors.surface }]}>
+                        <Feather name="edit-2" size={20} color={colors.primary} />
+                    </TouchableOpacity>
+                )}
             </View>
 
-            <View style={styles.container}>
-                {/* Avatar Section */}
-                <View style={styles.avatarContainer}>
-                    <Image
-                        style={styles.image}
-                        source={{ uri: avatar?.replace('http', 'https') }}
-                        contentFit="cover"
-                        transition={100}
-                    />
-                    {isEditing && <TouchableOpacity style={styles.editIcon} onPress={isEditing ? handleEditAvatar : undefined}>
-                        <Icon name="edit" size={20} />
-                    </TouchableOpacity>}
-                </View>
-
-                {/* User Details */}
-                <View style={styles.detailsContainer}>
-                    <View style={styles.detailsContainerItem}>
-                        <Text style={styles.detailsContainerItemText}>Full Name</Text>
-                        <Input
-                            icon={<Icon name="user" size={26} strokeWidth={1.6} />}
-                            value={formData.fullName}
-                            editable={isEditing}
-                            onChangeText={(value) => handleChange('fullName', value)}
-                            style={{
-                                color: theme.colors.text,
-                            }}
-                        />
+            <ScrollView showsVerticalScrollIndicator={false}>
+                <View style={styles.container}>
+                    {/* Avatar Section */}
+                    <View style={styles.avatarSection}>
+                        <View style={[styles.avatarContainer, { borderColor: colors.border }]}>
+                            <Image
+                                style={styles.image}
+                                source={{ uri: avatar?.replace('http', 'https') }}
+                                contentFit="cover"
+                                transition={200}
+                            />
+                            {isEditing && (
+                                <TouchableOpacity
+                                    style={[styles.editIcon, { backgroundColor: colors.primary }]}
+                                    onPress={handleEditAvatar}
+                                >
+                                    <Feather name="camera" size={18} color="white" />
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                        {!isEditing && (
+                            <Text style={[styles.userName, { color: colors.text }]}>{formData.fullName}</Text>
+                        )}
                     </View>
 
-                    <View style={styles.detailsContainerItem}>
-                        <Text style={styles.detailsContainerItemText}>Username</Text>
-                        <Input
-                            icon={<Icon name="user" size={26} strokeWidth={1.6} />}
-                            value={formData.username}
-                            editable={isEditing}
-                            onChangeText={(value) => handleChange('username', value)}
-                            style={{
-                                color: theme.colors.text,
-                            }}
-                        />
+                    {/* User Details */}
+                    <View style={[styles.card, { backgroundColor: colors.surface }]}>
+                        <View style={styles.detailsContainerItem}>
+                            <Text style={[styles.label, { color: colors.textSecondary }]}>Full Name</Text>
+                            <Input
+                                icon={<Feather name="user" size={20} color={colors.textSecondary} />}
+                                value={formData.fullName}
+                                editable={isEditing}
+                                onChangeText={(value) => handleChange('fullName', value)}
+                                style={{
+                                    color: colors.text,
+                                    backgroundColor: isDark ? colors.card : '#F9FAFB',
+                                    borderColor: colors.border,
+                                }}
+                            />
+                        </View>
+
+                        <View style={styles.detailsContainerItem}>
+                            <Text style={[styles.label, { color: colors.textSecondary }]}>Username</Text>
+                            <Input
+                                icon={<Feather name="at-sign" size={20} color={colors.textSecondary} />}
+                                value={formData.username}
+                                editable={isEditing}
+                                onChangeText={(value) => handleChange('username', value)}
+                                style={{
+                                    color: colors.text,
+                                    backgroundColor: isDark ? colors.card : '#F9FAFB',
+                                    borderColor: colors.border,
+                                }}
+                            />
+                        </View>
+
+                        <View style={styles.detailsContainerItem}>
+                            <Text style={[styles.label, { color: colors.textSecondary }]}>Email</Text>
+                            <Input
+                                icon={<Feather name="mail" size={20} color={colors.textSecondary} />}
+                                value={formData.email}
+                                editable={isEditing}
+                                onChangeText={(value) => handleChange('email', value)}
+                                style={{
+                                    color: colors.text,
+                                    backgroundColor: isDark ? colors.card : '#F9FAFB',
+                                    borderColor: colors.border,
+                                }}
+                            />
+                        </View>
                     </View>
 
-                    <View style={styles.detailsContainerItem}>
-                        <Text style={styles.detailsContainerItemText}>Email</Text>
-                        <Input
-                            icon={<Icon name="email" size={26} strokeWidth={1.6} />}
-                            value={formData.email}
-                            editable={isEditing}
-                            onChangeText={(value) => handleChange('email', value)}
-                            style={{
-                                color: theme.colors.text,
-                            }}
-                        />
+                    {/* Settings Card */}
+                    <View style={[styles.card, { backgroundColor: colors.surface }]}>
+                        <Text style={[styles.sectionTitle, { color: colors.text }]}>Appearance</Text>
+
+                        <TouchableOpacity
+                            style={[styles.settingRow, { borderBottomColor: colors.border }]}
+                            onPress={() => setTheme(isDark ? 'light' : 'dark')}
+                        >
+                            <View style={styles.settingLeft}>
+                                <Feather name={isDark ? "moon" : "sun"} size={22} color={colors.text} />
+                                <Text style={[styles.settingText, { color: colors.text }]}>
+                                    {isDark ? 'Dark Mode' : 'Light Mode'}
+                                </Text>
+                            </View>
+                            <Switch
+                                value={isDark}
+                                onValueChange={(value) => setTheme(value ? 'dark' : 'light')}
+                                trackColor={{ false: colors.border, true: colors.primary }}
+                                thumbColor="white"
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            style={styles.settingRow}
+                            onPress={() => router.push('/changePassword' as any)}
+                        >
+                            <View style={styles.settingLeft}>
+                                <Feather name="lock" size={22} color={colors.text} />
+                                <Text style={[styles.settingText, { color: colors.text }]}>Change Password</Text>
+                            </View>
+                            <Feather name="chevron-right" size={20} color={colors.textSecondary} />
+                        </TouchableOpacity>
                     </View>
 
-                    <TouchableOpacity onPress={() => router.push('/changePassword' as any)}>
-                        <Text style={styles.changePassword}>Change Password</Text>
-                    </TouchableOpacity>
-
-                    {/* Toggle between Edit and Save buttons */}
+                    {/* Action Buttons */}
                     {isEditing ? (
-                        <View style={styles.savaCancelButtonContainer}>
-                            <TouchableOpacity onPress={handleSaveProfile} style={styles.saveButton}>
-                                <Text style={styles.saveText}>Save</Text>
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity
+                                onPress={handleCancel}
+                                style={[styles.button, styles.cancelButton, { borderColor: colors.border }]}
+                            >
+                                <Text style={[styles.buttonText, { color: colors.text }]}>Cancel</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={handleCancel} style={styles.cancelButton}>
-                                <Text style={styles.cancelText}>Cancel</Text>
+                            <TouchableOpacity
+                                onPress={handleSaveProfile}
+                                style={[styles.button, styles.saveButton, { backgroundColor: colors.primary }]}
+                            >
+                                <Text style={[styles.buttonText, { color: 'white' }]}>Save Changes</Text>
                             </TouchableOpacity>
                         </View>
                     ) : (
-                        <TouchableOpacity onPress={toggleEditMode} style={styles.editButton}>
-                            <Text style={styles.editText}>Edit</Text>
+                        <TouchableOpacity
+                            onPress={handleLogout}
+                            style={[styles.button, styles.logoutButton, { borderColor: colors.error }]}
+                        >
+                            <Feather name="log-out" size={18} color={colors.error} />
+                            <Text style={[styles.buttonText, { color: colors.error }]}>Logout</Text>
                         </TouchableOpacity>
                     )}
 
-                    <TouchableOpacity onPress={() => {
-                        router.dismissAll()
-                        dispatch(logout())
-                    }} style={styles.logoutButton}>
-                        <Text style={styles.logoutText}>Logout</Text>
-                    </TouchableOpacity>
+                    <View style={{ height: hp(5) }} />
                 </View>
-            </View>
-
+            </ScrollView>
         </ScreenWrapper>
     )
 }
@@ -214,144 +287,121 @@ const Profile = () => {
 export default Profile
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: wp(4),
+        paddingVertical: hp(2),
+        borderBottomWidth: 1,
+    },
+    title: {
+        fontSize: 20,
+        fontWeight: '700',
+    },
+    iconButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     container: {
-        flexDirection: 'column',
-        gap: 10,
-        paddingHorizontal: 20,
+        padding: wp(4),
+        gap: 20,
+    },
+    avatarSection: {
+        alignItems: 'center',
+        gap: 12,
+        paddingVertical: hp(2),
     },
     avatarContainer: {
-        height: 100,
-        width: 100,
-        alignSelf: 'center',
+        height: 120,
+        width: 120,
+        borderRadius: 60,
+        borderWidth: 4,
+        position: 'relative',
     },
     image: {
         height: '100%',
         width: '100%',
-        borderRadius: 50,
+        borderRadius: 60,
     },
     editIcon: {
         position: 'absolute',
-        bottom: 0,
-        right: -12,
-        padding: 7,
-        borderRadius: 50,
-        backgroundColor: 'white',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.4,
-        shadowRadius: 5,
-        elevation: 7,
-    },
-
-    header: {
-        flexDirection: 'row',
+        bottom: 4,
+        right: 4,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        justifyContent: 'center',
         alignItems: 'center',
-        paddingHorizontal: 20,
-        gap: 10,
+        borderWidth: 3,
+        borderColor: 'white',
     },
-    title: {
-        fontSize: 18,
-        fontWeight: '600',
-        textAlign: 'center',
-        color: theme.colors.text,
+    userName: {
+        fontSize: 24,
+        fontWeight: '700',
     },
-
-    detailsContainer: {
-        gap: 15,
+    card: {
+        borderRadius: 16,
+        padding: 16,
+        gap: 16,
     },
     detailsContainerItem: {
-        flexDirection: 'column',
-        gap: 5,
+        gap: 8,
     },
-    detailsContainerItemText: {
-        fontSize: 16,
+    label: {
+        fontSize: 12,
         fontWeight: '600',
-        color: theme.colors.text,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
-    changePassword: {
-        color: theme.colors.textDark,
-        fontSize: 14,
-        fontWeight: '600',
-        textAlign: 'right',
-    },
-    editButton: {
-        marginTop: 10,
-        padding: 10,
-        borderRadius: wp(2),
-        borderWidth: 1,
-        borderColor: theme.colors.primary,
-        backgroundColor: "rgb(242, 242, 242)",
-        shadowColor: theme.colors.dark,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 8,
-    },
-    editText: {
-        color: theme.colors.text,
+    sectionTitle: {
         fontSize: 16,
-        textAlign: 'center',
-        fontWeight: theme.fonts.semibold
+        fontWeight: '700',
+        marginBottom: 8,
     },
-    savaCancelButtonContainer: {
+    settingRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
     },
-    saveButton: {
-        width: wp(20),
-        marginTop: 20,
-        padding: 10,
-        borderColor: theme.colors.primary,
-        borderWidth: 1,
-        borderRadius: wp(2),
-        backgroundColor: "rgb(242, 242, 242)",
-        shadowColor: theme.colors.dark,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 8,
+    settingLeft: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
     },
-    saveText: {
-        color: 'green',
+    settingText: {
         fontSize: 16,
-        textAlign: 'center',
-        fontWeight: theme.fonts.semibold
+        fontWeight: '500',
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        gap: 12,
+    },
+    button: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingVertical: 14,
+        borderRadius: 12,
+        gap: 8,
     },
     cancelButton: {
-        width: wp(20),
-        marginTop: 20,
-        padding: 10,
-        borderColor: theme.colors.primary,
-        borderWidth: 1,
-        borderRadius: wp(2),
-        backgroundColor: "rgb(242, 242, 242)",
-        shadowColor: theme.colors.dark,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 8,
+        flex: 1,
+        borderWidth: 1.5,
     },
-    cancelText: {
-        color: 'red',
-        fontSize: 16,
-        textAlign: 'center',
-        fontWeight: theme.fonts.semibold
+    saveButton: {
+        flex: 2,
     },
     logoutButton: {
-        padding: 10,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: 'red',
-        backgroundColor: "rgb(242, 242, 242)",
-        shadowColor: theme.colors.dark,
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.5,
-        shadowRadius: 8,
-        elevation: 8,
+        borderWidth: 1.5,
     },
-    logoutText: {
-        color: theme.colors.primary,
+    buttonText: {
         fontSize: 16,
-        fontWeight: 'bold',
-        textAlign: 'center',
+        fontWeight: '600',
     },
-})
+});

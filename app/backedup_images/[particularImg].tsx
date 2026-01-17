@@ -8,7 +8,6 @@ import { useVideoPlayer, VideoView } from 'expo-video';
 import * as Clipboard from 'expo-clipboard';
 import { RootState } from '@/store/store';
 import { Feather } from '@expo/vector-icons';
-import { theme } from '@/constants/theme';
 import { hp, wp } from '@/helpers/common';
 import { GestureDetector, Gesture } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring, FadeIn, FadeOut } from 'react-native-reanimated';
@@ -187,7 +186,7 @@ const Page = () => {
     }, [currentIndex, player, toggleControls]);
 
     return (
-        <ScreenWrapper>
+        <ScreenWrapper bg='black'>
             <View style={styles.container}>
                 <RNFlatList
                     data={assets}
