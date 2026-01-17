@@ -1,14 +1,15 @@
-import { StatusBar, StyleSheet, Text, View } from 'react-native'
 import React from 'react'
-import Loading from '../components/Loading'
+import { Redirect } from 'expo-router'
+import { useSelector } from 'react-redux'
+
 const index = () => {
-    return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: "center" }}>
-            <Loading />
-        </View>
-    )
+    const authStatus = useSelector((state: any) => state?.auth?.status)
+
+    if (authStatus) {
+        return <Redirect href={"/photos" as any} />
+    } else {
+        return <Redirect href={"/welcome" as any} />
+    }
 }
 
 export default index
-
-const styles = StyleSheet.create({})

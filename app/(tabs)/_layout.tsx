@@ -14,7 +14,7 @@ export default function TabLayout() {
         tabBarActiveTintColor: theme.colors.primary,
         headerShown: false,
         tabBarLabelStyle: {
-          fontSize: wp(2),
+          fontSize: wp(3),
           fontWeight: 600,
         },
         tabBarStyle: {
